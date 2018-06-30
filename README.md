@@ -20,7 +20,7 @@ verification time, although it's probably negligible.
 
 ## Sample usage
 
-```
+```go
 package main
 
 import (
