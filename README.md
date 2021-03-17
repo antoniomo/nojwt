@@ -58,9 +58,50 @@ func main() {
 The output of that should be:
 
 ```
-eyJoZWxsbyI6ICJ3b3JsZCEifQ.EmzSBHDU2UaoGhmTWaOSWHW9X8bvpEs7PX4oyqu4ISk
-{"hello": "world!"} true
-eyJoZWxsbyI6ICJ3b3JsZCEifQ.EmzSBHDU2UaoGhmxWaOSWHW9X8bvpEs7PX4oyqu4ISk
-{"hello": "world!"} false
-{"hello": "world!"} true
+eyJoZWxsbyI6ICJ3b3JsZCEifQ.g8o_EQ3pOt9qBQ-Yz8vK_rSoqWO47ds5hUsbPf9eObU
+{"hello": "world!"} <nil>
+eyJoZWxsbyI6ICJ3b3JsZCEifQ.g8o_EQ3pOt9qBQ-xz8vK_rSoqWO47ds5hUsbPf9eObU
+{"hello": "world!"} invalid nojwt signature
+{"hello": "world!"} <nil>
+```
+
+## CLI
+
+There's a very minimal CLI included. It doesn't check all use cases, but it's
+good for experimentation purposes.
+
+Check the help:
+
+```bash
+$ ./nojwt -h
+nojwt command line tool.
+
+Commands:
+	sign	Signs a payload with a secret, prints token
+	verify	Verifies a token with a secret, prints payload and possible error
+	parse	Parses a token, prints payload
+
+Usage:
+	nojwt <command> [options]
+
+Use "nojwt <command> --help" for more information about a given command.
+
+$./nojwt sign -h
+Usage of sign:
+  -p string
+    	Payload
+  -s string
+    	Signature
+
+$./nojwt verify -h
+Usage of verify:
+  -s string
+    	Signature
+  -t string
+    	Token
+
+$./nojwt parse -h
+Usage of parse:
+  -t string
+    	Token
 ```

@@ -11,13 +11,13 @@ var (
 )
 
 const (
-	token             = "eyJoZWxsbyI6ICJ3b3JsZCEifQ.EmzSBHDU2UaoGhmTWaOSWHW9X8bvpEs7PX4oyqu4ISk"
-	tamperedSignature = "eyJoZWxsbyI6ICJ3b3JsZCEifQ.EmzSBHDU2UaoGhmxWaOSWHW9X8bvpEs7PX4oyqu4ISk"
-	tamperedPayload   = "eyJoZWxxbyI6ICJ3b3JsZCEifQ.EmzSBHDU2UaoGhmTWaOSWHW9X8bvpEs7PX4oyqu4ISk"
+	notAToken         = "asdfasdfasdfasdf"
+	token             = "eyJoZWxsbyI6ICJ3b3JsZCEifQ.g8o_EQ3pOt9qBQ-Yz8vK_rSoqWO47ds5hUsbPf9eObU"
+	tamperedSignature = "eyJoZWxsbyI6ICJ3b3JsZCEifQ.g8o_EQ3pOt9qBQ-xz8vK_rSoqWO47ds5hUsbPf9eObU"
+	tamperedPayload   = "eyJoZWxxbyI6ICJ3b3JsZCEifQ.g8o_EQ3pOt9qBQ-xz8vK_rSoqWO47ds5hUsbPf9eObU"
 )
 
-func testSign(t *testing.T) {
-
+func TestSign(t *testing.T) {
 	tok := SignHS256(payload, secret)
 
 	if token != tok {
@@ -26,47 +26,59 @@ func testSign(t *testing.T) {
 }
 
 func TestParse(t *testing.T) {
-
-	payload2, ok := Parse(tamperedSignature)
+	payload2, err := Parse(tamperedSignature)
 
 	if !bytes.Equal(payload, payload2) {
 		t.Error("payloads don't match")
 	}
 
-	if !ok {
+	if err != nil {
 		t.Error("unable to parse token")
+	}
+
+	_, err = Parse(notAToken)
+	if err != ErrInvalidFormat {
+		t.Error("wrongly parsing wrong format")
 	}
 }
 
 func TestVerify(t *testing.T) {
-
-	payload2, ok := VerifyHS256(token, secret)
+	payload2, err := VerifyHS256(token, secret)
 
 	if !bytes.Equal(payload, payload2) {
 		t.Error("payloads don't match")
 	}
 
-	if !ok {
+	if err == ErrInvalidFormat {
+		t.Error("unable to parse token")
+	}
+
+	if err == ErrInvalidSignature {
 		t.Error("unable to verify token")
 	}
 
-	payload2, ok = VerifyHS256(tamperedSignature, secret)
+	payload2, err = VerifyHS256(tamperedSignature, secret)
 
 	if !bytes.Equal(payload, payload2) {
 		t.Error("payloads don't match")
 	}
 
-	if ok {
+	if err != ErrInvalidSignature {
 		t.Error("wrongly verifying tampered signature token")
 	}
 
-	payload2, ok = VerifyHS256(tamperedPayload, secret)
+	payload2, err = VerifyHS256(tamperedPayload, secret)
 
 	if bytes.Equal(payload, payload2) {
 		t.Error("payloads match on tampered payload")
 	}
 
-	if ok {
-		t.Error("wrongly verifying tampered payload token")
+	if err != ErrInvalidSignature {
+		t.Error("wrongly verifying tampered signature token")
+	}
+
+	_, err = VerifyHS256(notAToken, secret)
+	if err != ErrInvalidFormat {
+		t.Error("wrongly parsing wrong format")
 	}
 }
